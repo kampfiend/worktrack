@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WorkTrack Local Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="WorkTrack prototype">
+      <section class="phone-frame" id="app">
+        <header class="topbar">
+          <button class="icon-button" id="menuButton" aria-label="Open menu">
+            <span></span><span></span><span></span>
+          </button>
+          <strong class="brand">WorkTrack</strong>
+          <button class="language-pill" id="languageButton" type="button">
+            <span aria-hidden="true">◎</span>
+            <span id="languageLabel">English</span>
+          </button>
+        </header>
+
+        <aside class="side-panel" id="sidePanel" aria-hidden="true">
+          <div class="side-panel-head">
+            <strong>WorkTrack</strong>
+            <button class="icon-button close-button" id="closeMenuButton" aria-label="Close menu">×</button>
+          </div>
+          <button class="side-row" data-side-action="notifications">Notification settings</button>
+          <button class="side-row" data-side-action="profile">My page</button>
+          <button class="side-row" data-side-action="language">Select language</button>
+          <button class="side-row" data-side-action="support">Support chatbot</button>
+          <button class="side-row danger" data-side-action="logout">Clear local data</button>
+        </aside>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <section class="screen auth-screen active" data-screen="login">
+          <div class="auth-mark">WT</div>
+          <h1>WorkTrack</h1>
+          <p class="muted">Build a simple record before a problem becomes hard to explain.</p>
+          <label>
+            ID or email
+            <input id="loginEmail" type="email" value="worker@example.com" autocomplete="email" />
+          </label>
+          <label>
+            Password
+            <input id="loginPassword" type="password" value="worktrack" autocomplete="current-password" />
+          </label>
+          <button class="primary wide" id="loginButton" type="button">Log in</button>
+          <button class="text-button" data-go="signup" type="button">Create a simple profile</button>
+        </section>
+
+        <section class="screen auth-screen" data-screen="signup">
+          <h1>Create profile</h1>
+          <p class="muted">For this prototype, the profile stays only on this device.</p>
+          <label>
+            Name
+            <input id="signupName" type="text" value="Will" />
+          </label>
+          <label>
+            Nationality
+            <select id="signupCountry">
+              <option>Nepal</option>
+              <option>Vietnam</option>
+              <option>Cambodia</option>
+              <option>Indonesia</option>
+              <option>Philippines</option>
+              <option>Thailand</option>
+              <option>Uzbekistan</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>
+            Payday each month
+            <input id="signupPayday" type="number" min="1" max="31" value="15" />
+          </label>
+          <button class="primary wide" id="createProfileButton" type="button">Create</button>
+          <button class="secondary wide" data-go="login" type="button">Cancel</button>
+        </section>
+
+        <section class="screen app-screen" data-screen="home">
+          <div class="content">
+            <p class="eyebrow" id="todayLabel">Today</p>
+            <h1 id="homeGreeting">Good morning</h1>
+
+            <article class="timer-card">
+              <div class="status-line">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="shiftStatus">Off shift</span>
+              </div>
+              <div class="timer" id="timerDisplay">00:00:00</div>
+              <p>Shift duration</p>
+              <button class="round-action" id="shiftButton" type="button" aria-label="Start work">
+                <span id="shiftIcon">▶</span>
+              </button>
+              <strong id="shiftActionLabel">Tap to start work</strong>
+            </article>
+
+            <article class="notice-card">
+              <span class="card-kicker">Paycheck day</span>
+              <h2 id="paydayTitle">Next payment soon</h2>
+              <p id="paydaySubtitle">Upload payslip when you receive it.</p>
+              <button class="circle-link" data-go-tab="calendar" aria-label="Open calendar">›</button>
+            </article>
+
+            <section class="compact-grid">
+              <button class="quick-card" data-go-tab="calendar">
+                <span>＋</span>
+                <strong>Add today's log</strong>
+              </button>
+              <button class="quick-card" data-go-tab="vault">
+                <span>▣</span>
+                <strong>Upload document</strong>
+              </button>
+            </section>
+          </div>
+        </section>
+
+        <section class="screen app-screen" data-screen="calendar">
+          <div class="content">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow" id="monthLabel">Calendar</p>
+                <h1>Daily record</h1>
+              </div>
+              <button class="small-button" id="todayButton" type="button">Today</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid" aria-label="Monthly calendar"></div>
+
+            <article class="log-panel">
+              <div class="section-head small">
+                <div>
+                  <p class="eyebrow" id="selectedDateLabel">Selected day</p>
+                  <h2>What should be saved?</h2>
+                </div>
+                <span class="saved-chip" id="savedChip">Not saved</span>
+              </div>
+
+              <div class="field-row">
+                <label>
+                  Start time
+                  <input id="workStartInput" type="time" />
+                </label>
+                <label>
+                  End time
+                  <input id="workEndInput" type="time" />
+                </label>
+              </div>
+              <label>
+                Pay / payslip note
+                <input id="payNoteInput" type="text" placeholder="Example: received payslip, salary delayed" />
+              </label>
+              <label>
+                Diary and feelings
+                <textarea id="diaryInput" placeholder="Write what happened, who was present, and anything that felt unfair."></textarea>
+              </label>
+              <div class="category-row" id="categoryRow"></div>
+              <button class="secondary wide" id="addCategoryButton" type="button">+ Add category</button>
+              <button class="primary wide" id="saveLogButton" type="button">Save entry</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen app-screen" data-screen="vault">
+          <div class="content">
+            <p class="eyebrow">Document vault</p>
+            <h1>Keep key documents together</h1>
+            <p class="muted">Files are represented locally for prototype testing. In a real build, this needs secure storage rules.</p>
+            <div class="document-list" id="documentList"></div>
+            <button class="primary wide" id="addDocumentButton" type="button">+ Add more document</button>
+            <article class="checklist-card">
+              <h2>Evidence checklist</h2>
+              <div id="checklist"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen app-screen" data-screen="report">
+          <div class="content">
+            <article class="readiness-card">
+              <p class="eyebrow">Current status</p>
+              <h1>Report readiness</h1>
+              <p>Check whether your record is ready to bring to a support center.</p>
+              <div class="score-line">
+                <strong id="readinessScore">0%</strong>
+                <span id="taskDoneLabel">0 of 4 tasks done</span>
+              </div>
+              <div class="progress-track"><span id="progressFill"></span></div>
+            </article>
+            <article class="guidance-card" id="guidanceCard">
+              <span>✦</span>
+              <div>
+                <h2 id="guidanceTitle">Start with one record</h2>
+                <p id="guidanceText">Add today’s work log or upload a contract first.</p>
+              </div>
+            </article>
+            <div class="readiness-list" id="readinessList"></div>
+            <div class="report-actions">
+              <h2>Prepare next step?</h2>
+              <p class="muted">This app does not submit a legal report. It helps organize what to bring when you ask for help.</p>
+              <button class="primary wide" id="prepareReportButton" type="button">Prepare summary</button>
+              <button class="secondary wide" id="saveDraftButton" type="button">Save as draft</button>
+            </div>
+          </div>
+        </section>
+
+        <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
+          <button class="nav-item active" data-tab="home" type="button" aria-label="Home"><span aria-hidden="true">⌂</span>Home</button>
+          <button class="nav-item" data-tab="calendar" type="button" aria-label="Calendar"><span aria-hidden="true">□</span>Calendar</button>
+          <button class="nav-item" data-tab="vault" type="button" aria-label="Vault"><span aria-hidden="true">▣</span>Vault</button>
+          <button class="nav-item" data-tab="report" type="button" aria-label="Report"><span aria-hidden="true">⚑</span>Report</button>
+        </nav>
+      </section>
+    </main>
+    <script src="./main.js"></script>
+  </body>
+</html>
