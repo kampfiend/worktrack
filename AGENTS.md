@@ -1,4 +1,4 @@
-# App Directory Rules
+﻿# App Directory Rules
 
 ## Purpose
 
@@ -33,12 +33,18 @@ Do not add network calls, analytics, trackers, or external storage unless the pr
 
 The target user may face language pressure, fear of retaliation, and low trust in formal systems. Interface copy should be direct, calm, and action-oriented.
 
-Avoid legal certainty language. Use "prepare", "record", "check", and "bring to相談/support" rather than implying that the app can guarantee a report result.
+Avoid legal certainty language. Use "prepare", "record", "check", and "bring to support" rather than implying that the app can guarantee a report result.
 
 ## File Structure
 
-- `index.html`: app shell and screens
-- `styles.css`: visual system and responsive layout
-- `main.js`: state, navigation, local persistence, and interactions
+- `index.html`, `signup.html`, `home.html`, `calendar.html`, `vault.html`, `report.html`: page-specific static HTML
+- `css/`: shared visual system split into base, layout, components, and page styles
+- `js/core/`: config, i18n, storage, state, date, DOM, and shell utilities
+- `js/features/`: auth, timer, logs, documents, report readiness, and navigation logic
+- `js/pages/`: page controllers that bind static HTML to feature modules
+
+Keep runtime code modular. Do not put translations, state, page templates, and feature behavior back into one monolithic script.
 
 Keep this directory dependency-free unless a real need appears.
+
+

@@ -1,0 +1,141 @@
+:root {
+  color-scheme: light;
+  --blue-950: #003f72;
+  --blue-900: #004b83;
+  --blue-800: #005a98;
+  --blue-700: #0b6cab;
+  --blue-100: #d8eaff;
+  --mint-700: #2d7256;
+  --mint-500: #89ddb0;
+  --mint-100: #dcf7e8;
+  --amber-700: #7a3d00;
+  --amber-100: #ffe1c8;
+  --ink: #20242d;
+  --text: #38404d;
+  --muted: #737b89;
+  --faint: #a3aab5;
+  --line: #eceff3;
+  --paper: #f7f7f6;
+  --field: #e8e8e7;
+  --white: #ffffff;
+  --shadow: 0 28px 70px rgba(29, 41, 57, 0.18);
+  --card-shadow: 0 18px 40px rgba(35, 48, 66, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Inter, "Avenir Next", "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #f4f7f6 0%, #e6eff6 55%, #f9faf8 100%);
+  color: var(--ink);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  color: var(--blue-950);
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.04;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.18;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-size: 17px;
+  line-height: 1.24;
+  margin-bottom: 5px;
+}
+
+p {
+  line-height: 1.46;
+}
+
+label {
+  color: var(--blue-950);
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.7px;
+  margin-top: 22px;
+  text-transform: uppercase;
+}
+
+input,
+select,
+textarea {
+  background: var(--field);
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink);
+  margin-top: 9px;
+  min-height: 50px;
+  outline: none;
+  padding: 13px 16px;
+  width: 100%;
+}
+
+textarea {
+  line-height: 1.4;
+  min-height: 132px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(0, 90, 152, 0.16), 0 0 0 1px var(--blue-700);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  color: var(--blue-950);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.7px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
