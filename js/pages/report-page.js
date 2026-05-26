@@ -49,12 +49,12 @@
         <div class="score-line"><strong>${readiness.score}%</strong><span>${WorkTrack.i18n.t("tasksDone", { done: readiness.done, total: readiness.total })}</span></div>
         <div class="progress-track"><span style="width:${readiness.score}%"></span></div>
       </article>
-      <article class="guidance-card">
-        <span class="guidance-icon" aria-hidden="true"></span>
+      <article class="guidance-card ${next ? "warning" : "ready"}">
+        <span class="guidance-icon" aria-hidden="true">${next ? lightbulbIcon() : checkIcon()}</span>
         <div><h2>${next ? WorkTrack.i18n.t("nextUsefulStep") : WorkTrack.i18n.t("recordSetReady")}</h2><p>${WorkTrack.dom.esc(next ? next.nextStep : WorkTrack.i18n.t("recordSetReadyText"))}</p></div>
       </article>
       <section class="readiness-list">
-        ${readiness.checks.map((check) => `<article class="readiness-item ${check.done ? "done" : "warning"}"><span class="doc-icon">${check.done ? "OK" : "!"}</span><span><h3>${WorkTrack.dom.esc(check.title)}</h3><p>${WorkTrack.dom.esc(check.detail)}</p></span><span class="state-pill ${check.done ? "done" : ""}">${check.done ? WorkTrack.i18n.t("done") : WorkTrack.i18n.t("needed")}</span></article>`).join("")}
+        ${readiness.checks.map(renderReadinessItem).join("")}
       </section>
       <section class="report-actions">
         <h2>${WorkTrack.i18n.t("prepareSummary")}</h2>
@@ -87,6 +87,19 @@
 
   function renderLogSummary([date, log]) {
     return `<div class="summary-item"><strong>${WorkTrack.date.formatDate(WorkTrack.date.parseDateKey(date), { month: "long", day: "numeric", year: "numeric" })}</strong><p>${WorkTrack.dom.esc(`${log.start || "--:--"} - ${log.end || "--:--"}`)}</p><p>${WorkTrack.dom.esc(log.diary || log.payNote || "")}</p></div>`;
+  }
+
+  function renderReadinessItem(check) {
+    const icon = check.done ? checkIcon() : WorkTrack.features.documents.iconSvg(check.icon);
+    return `<article class="readiness-item ${check.done ? "done" : "warning"}"><span class="doc-icon" aria-hidden="true">${icon}</span><span><h3>${WorkTrack.dom.esc(check.title)}</h3><p>${WorkTrack.dom.esc(check.detail)}</p></span><span class="state-pill ${check.done ? "done" : ""}">${check.done ? WorkTrack.i18n.t("done") : WorkTrack.i18n.t("needed")}</span></article>`;
+  }
+
+  function checkIcon() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4L18 8"></path></svg>';
+  }
+
+  function lightbulbIcon() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M8 14.5c-1.3-1-2-2.5-2-4.2C6 7 8.7 4.5 12 4.5s6 2.5 6 5.8c0 1.7-.7 3.2-2 4.2-.8.7-1.2 1.4-1.2 2.5H9.2c0-1.1-.4-1.8-1.2-2.5z"></path></svg>';
   }
 })(window);
 

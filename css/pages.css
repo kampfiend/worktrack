@@ -282,8 +282,7 @@
   color: var(--blue-950);
 }
 
-.calendar-day.has-log::after,
-.calendar-day.payday::before {
+.calendar-day.has-log::after {
   border-radius: 50%;
   bottom: 5px;
   content: "";
@@ -300,12 +299,6 @@
 
 .calendar-day.selected.has-log::after {
   background: var(--white);
-}
-
-.calendar-day.payday::before {
-  background: var(--mint-700);
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .selected-log-card,
@@ -533,11 +526,20 @@
   border: 2px solid #83909d;
   border-radius: 50%;
   display: grid;
-  font-size: 12px;
   height: 20px;
   line-height: 1;
   place-items: center;
   width: 20px;
+}
+
+.check-mark svg {
+  fill: none;
+  height: 14px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  width: 14px;
 }
 
 .done .check-mark {
@@ -580,8 +582,8 @@
 
 .document-card.warning,
 .readiness-item.warning {
-  background: var(--amber-100);
-  border-left-color: var(--amber-700);
+  background: var(--white);
+  border-left-color: var(--blue-700);
 }
 
 .doc-icon {
@@ -589,16 +591,31 @@
   border-radius: 50%;
   color: var(--blue-950);
   display: grid;
-  font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   height: 44px;
+  line-height: 1;
   place-items: center;
   width: 44px;
+}
+
+.doc-icon svg {
+  fill: none;
+  height: 24px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 24px;
 }
 
 .done .doc-icon {
   background: #aef0c9;
   color: var(--mint-700);
+}
+
+.readiness-item.warning .doc-icon {
+  background: var(--blue-100);
+  color: var(--blue-950);
 }
 
 .document-card h3,
@@ -628,6 +645,11 @@
 .state-pill.done {
   background: var(--mint-100);
   color: var(--mint-700);
+}
+
+.readiness-item.warning .state-pill {
+  background: var(--blue-100);
+  color: var(--blue-950);
 }
 
 .add-custom {
@@ -668,6 +690,10 @@
   color: rgba(255, 255, 255, 0.88);
 }
 
+.readiness-card h1 {
+  color: var(--white);
+}
+
 .readiness-card .progress-track {
   background: rgba(255, 255, 255, 0.24);
 }
@@ -696,8 +722,9 @@
 
 .guidance-card {
   align-items: center;
-  background: var(--mint-100);
-  color: var(--mint-700);
+  background: var(--white);
+  box-shadow: var(--card-shadow);
+  color: var(--ink);
   display: grid;
   gap: 16px;
   grid-template-columns: 52px 1fr;
@@ -706,18 +733,37 @@
 }
 
 .guidance-icon {
-  background: var(--mint-700);
+  background: var(--amber-100);
   border-radius: 50%;
-  color: var(--white);
+  color: var(--amber-700);
   display: grid;
-  font-size: 24px;
   height: 52px;
   place-items: center;
   width: 52px;
 }
 
+.guidance-card.ready .guidance-icon {
+  background: var(--mint-100);
+  color: var(--mint-700);
+}
+
+.guidance-icon svg {
+  fill: none;
+  height: 26px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  width: 26px;
+}
+
+.guidance-card.ready .guidance-icon svg path:first-child {
+  fill: none;
+  opacity: 1;
+}
+
 .guidance-card p {
-  color: #467862;
+  color: var(--muted);
   margin: 0;
 }
 
@@ -850,18 +896,4 @@
   position: absolute;
   top: 9px;
   width: 11px;
-}
-
-.guidance-icon {
-  font-size: 0;
-  position: relative;
-}
-
-.guidance-icon::before {
-  border-bottom: 4px solid var(--white);
-  border-left: 4px solid var(--white);
-  content: "";
-  height: 12px;
-  transform: rotate(-45deg);
-  width: 22px;
 }

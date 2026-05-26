@@ -189,9 +189,21 @@
   place-items: center;
 }
 
-.nav-item span {
-  font-size: 21px;
-  line-height: 1;
+.nav-item .nav-icon {
+  display: grid;
+  height: 24px;
+  place-items: center;
+  width: 24px;
+}
+
+.nav-item .nav-icon svg {
+  fill: none;
+  height: 23px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 23px;
 }
 
 .nav-item.active {

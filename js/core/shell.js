@@ -122,9 +122,19 @@
     const active = WorkTrack.dom.pageName();
     nav.innerHTML = WorkTrack.config.tabs.map((tab) => `
       <a class="nav-item ${active === tab.id ? "active" : ""}" href="${tab.page}" aria-label="${WorkTrack.i18n.t(tab.labelKey)}">
-        <span aria-hidden="true">${tab.icon}</span>${WorkTrack.i18n.t(tab.labelKey)}
+        <span class="nav-icon" aria-hidden="true">${navIconSvg(tab.icon)}</span>${WorkTrack.i18n.t(tab.labelKey)}
       </a>
     `).join("");
+  }
+
+  function navIconSvg(icon) {
+    const icons = {
+      home: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"></path><path d="M6.5 10.5V20h11v-9.5"></path><path d="M10 20v-5h4v5"></path></svg>',
+      calendar: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"></path></svg>',
+      vault: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="9" width="14" height="11" rx="2"></rect><path d="M8 9V7a4 4 0 0 1 8 0v2"></path><circle cx="12" cy="14.5" r="1.5"></circle><path d="M12 16v1.5"></path></svg>',
+      report: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5"></path><path d="M9.5 15.5l2 2 4-5"></path><path d="M9 11h4"></path></svg>'
+    };
+    return icons[icon] || icons.home;
   }
 
   function renderMenu() {

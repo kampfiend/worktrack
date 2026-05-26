@@ -34,23 +34,46 @@
 
   function normalize(input) {
     const base = createSeedState(supportedLanguage(input?.profile?.language || "en"));
+    const inputHasLogs = input && Object.prototype.hasOwnProperty.call(input, "logs");
+    const inputVersion = Number(input?.version) || 0;
+    const logs = inputHasLogs ? { ...(input.logs || {}) } : base.logs;
+    if (inputHasLogs && inputVersion < 4) {
+      addDefaultMayFifteenthLog(logs);
+    }
     const merged = {
       ...base,
       ...(input || {}),
       version: WorkTrack.config.appVersion,
       profile: { ...base.profile, ...(input?.profile || {}) },
       shift: { ...base.shift, ...(input?.shift || {}) },
-      logs: input && Object.prototype.hasOwnProperty.call(input, "logs") ? (input.logs || {}) : base.logs,
+      logs,
       documents: input && Object.prototype.hasOwnProperty.call(input, "documents") ? (input.documents || {}) : base.documents,
       categories: Array.isArray(input?.categories) ? input.categories : base.categories,
       ui: { ...base.ui, ...(input?.ui || {}) }
     };
     merged.profile.language = supportedLanguage(merged.profile.language);
+    merged.profile.nationality = supportedCountry(merged.profile.nationality, merged.profile.language);
     return merged;
   }
 
   function supportedLanguage(language) {
     return WorkTrack.config.languages.some((item) => item.code === language) ? language : "en";
+  }
+
+  function supportedCountry(value, language) {
+    const normalized = String(value || "").trim();
+    const country = WorkTrack.config.countries.find((item) => {
+      if (item.code === normalized) return true;
+      return Object.values(item.names || {}).some((name) => name === normalized);
+    });
+    if (country) return country.code;
+    const matchingLanguage = WorkTrack.config.languages.find((item) => item.code === normalized || item.label === normalized);
+    if (matchingLanguage) return defaultCountryCode(matchingLanguage.code);
+    return defaultCountryCode(language);
+  }
+
+  function defaultCountryCode(language) {
+    return WorkTrack.config.countries.find((item) => item.languageCode === language)?.code || WorkTrack.config.countries[0]?.code || "us";
   }
 
   function createSeedState(language) {
@@ -61,18 +84,22 @@
     const todayKey = toDateKey(today);
     const yesterdayKey = toDateKey(yesterday);
     const threeDaysKey = toDateKey(threeDaysAgo);
+    const profileLanguage = supportedLanguage(language || "en");
+    const profileNationality = defaultCountryCode(profileLanguage);
+    const mayFifteenth = defaultMayFifteenthDate(today);
+    const mayFifteenthKey = toDateKey(mayFifteenth);
 
     return {
       version: WorkTrack.config.appVersion,
       isLoggedIn: false,
       profile: {
         name: "Will",
-        nationality: "Nepal",
+        nationality: profileNationality,
         email: "worker@example.com",
         residentId: "M123456789",
         birthDate: "1998-05-13",
         payday: 15,
-        language: supportedLanguage(language || "en")
+        language: profileLanguage
       },
       shift: {
         active: false,
@@ -96,7 +123,8 @@
           diary: "The supervisor asked the team to stay late. I wrote down who was present and what time we left.",
           payNote: "Payslip has not arrived yet.",
           savedAt: yesterday.toISOString()
-        }
+        },
+        [mayFifteenthKey]: createMayFifteenthLog(mayFifteenth)
       },
       documents: {
         contract: {
@@ -131,6 +159,29 @@
         summaryOpen: false
       }
     };
+  }
+
+  function addDefaultMayFifteenthLog(logs) {
+    const mayFifteenth = defaultMayFifteenthDate(new Date());
+    const mayFifteenthKey = toDateKey(mayFifteenth);
+    if (!logs[mayFifteenthKey]) {
+      logs[mayFifteenthKey] = createMayFifteenthLog(mayFifteenth);
+    }
+  }
+
+  function createMayFifteenthLog(date) {
+    return {
+      start: "09:00",
+      end: "17:00",
+      categories: ["lateWage"],
+      diary: "I felt a little annoyed and sad because my wages were delayed. I wrote this down so I can explain what happened if I need support.",
+      payNote: "Salary delayed.",
+      savedAt: date.toISOString()
+    };
+  }
+
+  function defaultMayFifteenthDate(referenceDate) {
+    return new Date(referenceDate.getFullYear(), 4, 15, 12, 0, 0);
   }
 
   function toDateKey(date) {

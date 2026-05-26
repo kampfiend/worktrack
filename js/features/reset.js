@@ -13,8 +13,9 @@
   function resetCalendarEntries() {
     const today = new Date();
     WorkTrack.state.update((state) => {
-      state.logs = {};
-      state.categories = WorkTrack.state.createSeedState(state.profile.language).categories;
+      const seed = WorkTrack.state.createSeedState(state.profile.language);
+      state.logs = seed.logs;
+      state.categories = seed.categories;
       state.shift = {
         active: false,
         startedAt: null,

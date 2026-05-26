@@ -57,7 +57,6 @@
       if (key === state.ui.selectedDate) classes.push("selected");
       if (key === todayKey) classes.push("today");
       if (state.logs[key]) classes.push("has-log");
-      if (day === Number(state.profile.payday)) classes.push("payday");
       cells.push(`<button type="button" class="${classes.join(" ")}" data-date="${key}">${day}</button>`);
     }
     while ((cells.length - 7) % 7 !== 0) cells.push(`<div class="calendar-day outside"></div>`);

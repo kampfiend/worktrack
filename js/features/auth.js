@@ -16,7 +16,7 @@
     const data = new FormData(form);
     WorkTrack.state.update((state) => {
       state.profile.name = String(data.get("name") || "Worker").trim();
-      state.profile.nationality = String(data.get("nationality") || "Other");
+      state.profile.nationality = supportedCountryCode(data.get("nationality"), state.profile.language);
       state.profile.email = String(data.get("email") || "").trim();
       state.profile.residentId = String(data.get("residentId") || "").trim();
       state.profile.birthDate = String(data.get("birthDate") || "");
@@ -35,6 +35,12 @@
   function clamp(value, min, max) {
     if (Number.isNaN(value)) return min;
     return Math.max(min, Math.min(max, value));
+  }
+
+  function supportedCountryCode(value, language) {
+    const normalized = String(value || "").trim();
+    if (WorkTrack.config.countries.some((item) => item.code === normalized)) return normalized;
+    return WorkTrack.config.countries.find((item) => item.languageCode === language)?.code || WorkTrack.config.countries[0]?.code || "us";
   }
 
   WorkTrack.features.auth = { loginFromForm, signupFromForm, logoutToDemo };

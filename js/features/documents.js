@@ -12,16 +12,42 @@
         id,
         title: WorkTrack.i18n.t(definition.titleKey),
         detail: WorkTrack.i18n.t(definition.detailKey),
-        icon: definition.icon
+        icon: documentIcon(definition.icon, "file-text")
       };
     }
     return {
       id,
+      ...stored,
       title: stored.title || WorkTrack.i18n.t("docVisa"),
       detail: stored.detail || WorkTrack.i18n.t("docVisaDetail"),
-      icon: stored.icon || "DOC",
-      ...stored
+      icon: documentIcon(stored.icon, stored.custom ? "plus" : "file-text")
     };
+  }
+
+  function documentIcon(icon, fallback = "file-text") {
+    const legacyIcons = {
+      ADD: "plus",
+      DOC: "file-text",
+      ID: "id-card",
+      MED: "medical",
+      PAY: "cash",
+      TIME: "clock"
+    };
+    const normalized = legacyIcons[String(icon || "").toUpperCase()] || icon;
+    return Object.prototype.hasOwnProperty.call(iconRegistry, normalized) ? normalized : fallback;
+  }
+
+  const iconRegistry = {
+    "cash": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle><path d="M6 9h2M16 15h2"></path></svg>',
+    "clock": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg>',
+    "file-text": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg>',
+    "id-card": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 16c.6-1.8 5.4-1.8 6 0M14 10h4M14 14h4"></path></svg>',
+    "medical": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="4" width="6" height="16" rx="1"></rect><rect x="4" y="9" width="16" height="6" rx="1"></rect></svg>',
+    "plus": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v8M8 12h8"></path></svg>'
+  };
+
+  function iconSvg(icon) {
+    return iconRegistry[documentIcon(icon)] || iconRegistry["file-text"];
   }
 
   function all() {
@@ -79,7 +105,7 @@
         id,
         title: title.trim(),
         detail: WorkTrack.i18n.t("docVisaDetail"),
-        icon: "ADD",
+        icon: "plus",
         custom: true,
         uploaded: false,
         createdAt: new Date().toISOString()
@@ -88,5 +114,5 @@
     WorkTrack.shell.showToast(WorkTrack.i18n.t("customDocAddedToast"));
   }
 
-  WorkTrack.features.documents = { getDocument, all, requiredProgress, saveMetadata, savePaycheckMetadata, addCustom };
+  WorkTrack.features.documents = { getDocument, all, requiredProgress, saveMetadata, savePaycheckMetadata, addCustom, iconSvg };
 })(window);

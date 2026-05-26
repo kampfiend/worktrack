@@ -37,7 +37,7 @@
     WorkTrack.dom.setText("#vaultTitle", WorkTrack.i18n.t("documentVault"));
     WorkTrack.dom.setText("#vaultSubtitle", WorkTrack.i18n.t("vaultSubtitle"));
     WorkTrack.dom.setText("#requiredStatusTitle", WorkTrack.i18n.t("requiredStatus"));
-    WorkTrack.dom.setHTML("#requiredList", progress.docs.map((doc) => `<div class="required-row ${doc.uploaded ? "done" : ""}"><span class="check-mark">${doc.uploaded ? "OK" : ""}</span><span>${WorkTrack.dom.esc(doc.title)}</span></div>`).join(""));
+    WorkTrack.dom.setHTML("#requiredList", progress.docs.map((doc) => `<div class="required-row ${doc.uploaded ? "done" : ""}"><span class="check-mark" aria-hidden="true">${doc.uploaded ? checkIcon() : ""}</span><span>${WorkTrack.dom.esc(doc.title)}</span></div>`).join(""));
     WorkTrack.dom.setText("#progressText", `${progress.percent}%`);
     const progressFill = WorkTrack.dom.$("#progressFill");
     if (progressFill) progressFill.style.width = `${progress.percent}%`;
@@ -51,11 +51,15 @@
     const detail = uploaded ? WorkTrack.i18n.t("uploadedOn", { date: WorkTrack.date.formatDate(WorkTrack.date.parseDateKey(date), { month: "short", day: "numeric", year: "numeric" }) }) : doc.detail;
     return `
       <button class="document-card ${uploaded ? "done" : ""}" type="button" data-doc-id="${doc.id}">
-        <span class="doc-icon">${WorkTrack.dom.esc(doc.icon || "DOC")}</span>
+        <span class="doc-icon" aria-hidden="true">${WorkTrack.features.documents.iconSvg(doc.icon)}</span>
         <span><h3>${WorkTrack.dom.esc(doc.title)}</h3><p>${WorkTrack.dom.esc(uploaded && doc.filename ? `${detail} - ${doc.filename}` : detail)}</p></span>
         <span class="state-pill ${uploaded ? "done" : ""}">${uploaded ? WorkTrack.i18n.t("saved") : WorkTrack.i18n.t("required")}</span>
       </button>
     `;
+  }
+
+  function checkIcon() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4L18 8"></path></svg>';
   }
 })(window);
 
