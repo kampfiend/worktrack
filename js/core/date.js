@@ -169,9 +169,18 @@
     return Math.round((target - today) / 86400000);
   }
 
+  function parseTime(timeStr) {
+    if (!timeStr) return new Date();
+    const [h, m] = timeStr.split(':').map(Number);
+    const d = new Date();
+    d.setHours(h || 0, m || 0, 0, 0);
+    return d;
+  }
+
   WorkTrack.date = {
     toDateKey,
     parseDateKey,
+    parseTime,
     toMonthKey,
     parseMonthKey,
     toTimeValue,

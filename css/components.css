@@ -401,3 +401,77 @@
 .language-choice {
   padding: 0 12px;
 }
+
+/* Push Notification System */
+.push-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  left: 16px;
+  pointer-events: none;
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  z-index: 100;
+}
+
+.push-notification {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  padding: 16px;
+  pointer-events: auto;
+  transform: translateY(-120%);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s ease;
+}
+
+.push-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.push-header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.push-icon {
+  align-items: center;
+  background: var(--blue-900);
+  border-radius: 4px;
+  color: white;
+  display: flex;
+  font-size: 10px;
+  font-weight: 900;
+  height: 18px;
+  justify-content: center;
+  width: 18px;
+}
+
+.push-meta {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.push-title {
+  color: var(--blue-950);
+  font-size: 15px;
+  font-weight: 850;
+  margin-bottom: 4px;
+}
+
+.push-body {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}

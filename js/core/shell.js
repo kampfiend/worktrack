@@ -3,6 +3,7 @@
   let toastTimer = null;
   let shortcutsBound = false;
   let documentHandlersBound = false;
+  let notifToggle = false;
 
   function init({ requireAuth = true } = {}) {
     ensureSupportedLanguage();
@@ -17,6 +18,14 @@
     bindShell();
     bindResetShortcuts();
     WorkTrack.i18n.translateDocument();
+    
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
     return true;
   }
 
@@ -144,18 +153,10 @@
     panel.innerHTML = `
       <div class="side-head">
         <span>WorkTrack</span>
-        <button class="close-button" type="button" data-shell-action="close-menu" aria-label="${WorkTrack.i18n.t("menuClose")}">x</button>
-      </div>
-      <button class="side-row" type="button" data-shell-action="notifications">${WorkTrack.i18n.t("notifications")}</button>
-      <button class="side-row" type="button" data-shell-action="profile">${WorkTrack.i18n.t("myPage")}</button>
-      <p class="eyebrow" style="margin-top:22px;">${WorkTrack.i18n.t("selectLanguage")}</p>
-      <div class="language-list">
-        ${WorkTrack.config.languages.map((item) => `
-          <button class="language-choice ${item.code === language ? "active" : ""}" type="button" data-language="${item.code}"><span aria-hidden="true">${item.flag}</span>${WorkTrack.dom.esc(item.label)}</button>
-        `).join("")}
       </div>
       <button class="side-row" type="button" data-shell-action="support">${WorkTrack.i18n.t("supportChatbot")}</button>
       <p class="eyebrow" style="margin-top:22px;">${WorkTrack.i18n.t("demoResetControls")}</p>
+      <button class="side-row" type="button" data-shell-action="test-notification">Test Notification</button>
       <button class="side-row" type="button" data-shell-action="reset-documents">${WorkTrack.i18n.t("resetDocumentsOnly")}</button>
       <button class="side-row" type="button" data-shell-action="reset-calendar">${WorkTrack.i18n.t("resetCalendarOnly")}</button>
       <button class="side-row" type="button" data-shell-action="reset-readiness">${WorkTrack.i18n.t("resetReadinessOnly")}</button>
@@ -195,6 +196,13 @@
       WorkTrack.storage.remove(WorkTrack.config.legacyStorageKey);
       WorkTrack.state.reset({ keepLanguage: true, loggedIn: false });
       window.location.href = WorkTrack.config.pages.login;
+    }
+    if (action === "test-notification") {
+      closeMenu();
+      if (WorkTrack.notifications) {
+        notifToggle = !notifToggle;
+        WorkTrack.notifications.schedule(notifToggle ? "paycheck" : "passport", 10000);
+      }
     }
   }
 

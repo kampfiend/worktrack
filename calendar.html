@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="./css/layout.css" />
     <link rel="stylesheet" href="./css/components.css" />
     <link rel="stylesheet" href="./css/pages.css" />
+  
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="./icon.png" />
   </head>
   <body data-page="calendar">
     <main class="app-shell" aria-label="WorkTrack capstone prototype">
@@ -30,6 +35,12 @@
                 <div class="month-controls"><button id="monthPrev" type="button" data-i18n-aria="calendarPrev">&lt;</button><button id="monthNext" type="button" data-i18n-aria="calendarNext">&gt;</button></div>
               </div>
               <div class="calendar-grid" id="calendarGrid"></div>
+              <div class="calendar-legend">
+                <div class="legend-row"><span class="legend-dot grey"></span><span id="legendStandard">≤ 8h (within standard)</span></div>
+                <div class="legend-row"><span class="legend-dot orange"></span><span id="legendOvertime">9.5h - 12h (overtime)</span></div>
+                <div class="legend-row"><span class="legend-dot red"></span><span id="legendExcessive">12h+ (excessive overtime)</span></div>
+                <div class="legend-footnote" id="legendFootnote">* Daily total hours are automatically <a href="#">tracked</a>.</div>
+              </div>
             </article>
             <section id="logPanel"></section>
             <input id="paycheckInput" type="file" accept=".pdf,.jpg,.jpeg,.png,.heic,image/*,application/pdf" hidden />

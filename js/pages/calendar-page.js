@@ -35,6 +35,12 @@
     WorkTrack.dom.setText("#journeyTitle", WorkTrack.i18n.t("yourJourney"));
     WorkTrack.dom.setText("#journeySubtitle", WorkTrack.i18n.t("trackingStatus", { month: WorkTrack.date.formatDate(monthDate, { month: "long" }) }));
     WorkTrack.dom.setText("#monthLabel", WorkTrack.date.formatDate(monthDate, { month: "long", year: "numeric" }));
+    
+    WorkTrack.dom.setText("#legendStandard", WorkTrack.i18n.t("legendStandard"));
+    WorkTrack.dom.setText("#legendOvertime", WorkTrack.i18n.t("legendOvertime"));
+    WorkTrack.dom.setText("#legendExcessive", WorkTrack.i18n.t("legendExcessive"));
+    WorkTrack.dom.setHTML("#legendFootnote", WorkTrack.i18n.t("legendFootnote"));
+
     WorkTrack.dom.setHTML("#calendarGrid", renderCalendarGrid(monthDate));
     WorkTrack.dom.setHTML("#logPanel", renderSelectedLog());
   }
@@ -51,13 +57,48 @@
     const todayKey = WorkTrack.date.toDateKey(new Date());
 
     for (let i = first.getDay() - 1; i >= 0; i -= 1) cells.push(`<div class="calendar-day outside">${previousTotal - i}</div>`);
+    const expectedPayday = Number(state.profile.payday) || 15;
     for (let day = 1; day <= total; day += 1) {
       const key = WorkTrack.date.toDateKey(new Date(year, month, day));
       const classes = ["calendar-day"];
-      if (key === state.ui.selectedDate) classes.push("selected");
+      const isSelected = key === state.ui.selectedDate;
+      if (isSelected) classes.push("selected");
       if (key === todayKey) classes.push("today");
-      if (state.logs[key]) classes.push("has-log");
-      cells.push(`<button type="button" class="${classes.join(" ")}" data-date="${key}">${day}</button>`);
+      
+      const log = state.logs[key];
+      let contentHTML = `<span class="date-num">${day}</span>`;
+      
+      if (log) {
+        classes.push("has-log");
+        if (log.start && log.end) {
+          const shiftStart = WorkTrack.date.parseTime(log.start);
+          const shiftEnd = WorkTrack.date.parseTime(log.end);
+          let diff = shiftEnd.getTime() - shiftStart.getTime();
+          if (diff < 0) diff += 24 * 60 * 60 * 1000;
+          const hours = diff / (1000 * 60 * 60);
+          
+          if (hours > 12) classes.push("bg-red");
+          else if (hours > 8) classes.push("bg-orange");
+          else classes.push("bg-grey");
+          
+          const hoursFormatted = (Math.round(hours * 10) / 10).toString().replace(/\.0$/, "");
+          contentHTML += `<span class="hours-text">${hoursFormatted}</span>`;
+        }
+      }
+      
+      if (key === todayKey) {
+        contentHTML += `<div class="today-dot"></div>`;
+      }
+      if (day === expectedPayday) {
+        if (!log) classes.push("bg-payday");
+        contentHTML += `<div class="payday-badge"><span aria-hidden="true">$</span></div>`;
+      }
+      
+      if (isSelected) {
+        contentHTML += `<div class="add-log-badge">+</div>`;
+      }
+      
+      cells.push(`<button type="button" class="${classes.join(" ")}" data-date="${key}">${contentHTML}</button>`);
     }
     while ((cells.length - 7) % 7 !== 0) cells.push(`<div class="calendar-day outside"></div>`);
     return cells.join("");

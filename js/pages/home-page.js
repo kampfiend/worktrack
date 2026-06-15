@@ -1,18 +1,40 @@
 (function (window) {
   const WorkTrack = window.WorkTrack;
-  let timerInterval = null;
+  
+  // Dev key logic
+  let devKeyClicks = 0;
+  let devKeyTimeout = null;
 
   document.addEventListener("DOMContentLoaded", () => {
     if (!WorkTrack.shell.init()) return;
     render();
     document.addEventListener("worktrack:language-changed", render);
     document.addEventListener("worktrack:data-reset", render);
-    WorkTrack.dom.$("#timerMount")?.addEventListener("click", (event) => {
-      if (!event.target.closest("[data-home-action='toggle-shift']")) return;
-      WorkTrack.features.timer.toggle();
-      render();
-    });
-    timerInterval = window.setInterval(updateTimerText, 1000);
+    
+    // Dev key listener
+    const greeting = WorkTrack.dom.$("#homeGreeting");
+    if (greeting) {
+      greeting.addEventListener("click", () => {
+        devKeyClicks++;
+        if (devKeyTimeout) window.clearTimeout(devKeyTimeout);
+        
+        if (devKeyClicks >= 3) {
+          devKeyClicks = 0;
+          const currentState = WorkTrack.state.get();
+          if (!currentState.shift.active && currentState.shift.lastSummary) {
+            // Reset to state 1
+            WorkTrack.state.update((s) => {
+              s.shift.lastSummary = null;
+            });
+          } else {
+            WorkTrack.features.timer.toggle();
+          }
+          render();
+        } else {
+          devKeyTimeout = window.setTimeout(() => { devKeyClicks = 0; }, 500);
+        }
+      });
+    }
   });
 
   function render() {
@@ -27,42 +49,100 @@
     WorkTrack.dom.setText("#todayLabel", WorkTrack.date.formatDate(today, { weekday: "long", month: "long", day: "numeric" }));
     WorkTrack.dom.setText("#payTitle", payTitle);
     WorkTrack.dom.setText("#paySubtitle", WorkTrack.i18n.t("expectedPayday", { day: state.profile.payday || 15 }));
-    WorkTrack.dom.setHTML("#timerMount", WorkTrack.features.timer.shouldShowTodaySummary() ? renderSummaryCard(state.shift.lastSummary) : renderTimerCard());
-    updateTimerText();
+    
+    WorkTrack.dom.setHTML("#trackingMount", renderTrackingUI(state));
   }
 
-  function renderTimerCard() {
-    const active = WorkTrack.state.get().shift.active;
-    return `
-      <article class="timer-card">
-        <div class="status-chip ${active ? "on" : ""}"><span class="status-dot"></span>${active ? WorkTrack.i18n.t("onShift") : WorkTrack.i18n.t("offShift")}</div>
-        <div><div class="timer-time" id="timerDisplay">${WorkTrack.date.formatDuration(WorkTrack.features.timer.elapsed())}</div><p class="timer-label">${WorkTrack.i18n.t("shiftDuration")}</p></div>
-        <button class="round-action" type="button" data-home-action="toggle-shift" aria-label="${active ? WorkTrack.i18n.t("tapEndWork") : WorkTrack.i18n.t("tapStartWork")}"><span class="timer-control-icon ${active ? "pause-icon" : "play-icon"}" aria-hidden="true"></span></button>
-        <strong class="timer-action-label">${active ? WorkTrack.i18n.t("tapEndWork") : WorkTrack.i18n.t("tapStartWork")}</strong>
-      </article>
-    `;
-  }
+  function renderTrackingUI(state) {
+    const active = state.shift.active;
+    const summary = state.shift.lastSummary;
+    const now = new Date();
+    
+    let timeToDisplay, titleKey, workplaceText, cardClass, iconContent, showPin = false;
+    
+    if (active) {
+      cardClass = "checked-in";
+      iconContent = "✓";
+      titleKey = "youAreCheckedIn";
+      workplaceText = WorkTrack.i18n.t("workplace") || "Workplace";
+      showPin = true;
+      timeToDisplay = state.shift.startedAt ? new Date(state.shift.startedAt) : now;
+    } else if (summary) {
+      cardClass = "checked-out";
+      iconContent = "✓";
+      titleKey = "shiftCompleted";
+      // Hardcoded realistic time for the prototype presentation
+      workplaceText = WorkTrack.i18n.t("workedDuration", { time: "07:58" }) || `Worked 07:58`;
+      showPin = false;
+      timeToDisplay = now; // Or use summary end time if needed
+    } else {
+      cardClass = "looking";
+      iconContent = "...";
+      titleKey = "lookingForLocation";
+      workplaceText = WorkTrack.i18n.t("waiting") || "Waiting...";
+      showPin = true;
+      timeToDisplay = now;
+    }
+    
+    const timeString = WorkTrack.date.formatDate(timeToDisplay, { hour: "numeric", minute: "2-digit" });
+    const dateString = WorkTrack.date.formatDate(timeToDisplay, { month: "short", day: "numeric" });
+    
+    // For prototype, we mock weekly hours
+    const weeklyHours = "32h 15m";
+    const weekRange = "May 11 - May 17"; // Static for prototype
 
-  function renderSummaryCard(summary) {
     return `
-      <article class="summary-card">
-        <h2>${WorkTrack.i18n.t("shiftSummary")}</h2>
-        <div class="timer-time">${WorkTrack.date.formatDuration(summary.durationMs)}</div>
-        <div class="time-pair">
-          <div class="time-box"><span class="time-icon" aria-hidden="true"></span><small>${WorkTrack.i18n.t("startTime")}</small><strong>${summary.start}</strong></div>
-          <div class="time-box"><span class="time-icon" aria-hidden="true"></span><small>${WorkTrack.i18n.t("endTime")}</small><strong>${summary.end}</strong></div>
+      <div class="tracking-indicator">
+        <div class="tracking-indicator-header">
+          <div class="tracking-status-text"><span class="tracking-dot"></span><span data-i18n="autoTrackingOn">${WorkTrack.i18n.t("autoTrackingOn")}</span></div>
+          <div class="tracking-how-it-works"><span class="info-icon" aria-hidden="true">i</span><span data-i18n="howItWorks">${WorkTrack.i18n.t("howItWorks")}</span></div>
         </div>
-        <button class="primary wide" type="button" data-home-action="toggle-shift">${WorkTrack.i18n.t("startAnotherShift")}</button>
+        <div class="tracking-indicator-subtext">
+          <div class="pin-icon-wrapper"><span class="pin-icon" aria-hidden="true"></span></div><span data-i18n="autoTrackingDesc">${WorkTrack.i18n.t("autoTrackingDesc")}</span>
+        </div>
+      </div>
+
+      <article class="status-card ${cardClass}">
+        <div class="status-card-icon">
+          ${iconContent}
+        </div>
+        <h2 class="status-card-title">${WorkTrack.i18n.t(titleKey)}</h2>
+        
+        <div class="status-card-details">
+          ${workplaceText ? `
+          <div class="status-detail-row">
+            ${showPin ? `<div class="pin-icon-wrapper-grey"><span class="pin-icon-grey" aria-hidden="true"></span></div>` : ""}
+            <span class="status-detail-text">${workplaceText}</span>
+          </div>
+          ` : ""}
+          <div class="status-detail-row">
+            <span class="clock-icon-grey" aria-hidden="true"></span>
+            <span class="status-detail-text">${timeString} • ${dateString}</span>
+          </div>
+        </div>
+        
+        <button class="status-footer-button" type="button" onclick="location.href='./calendar.html'">
+          <span data-i18n="viewTimeline">${WorkTrack.i18n.t("viewTimeline")}</span>
+          <span class="arrow-right">&gt;</span>
+        </button>
+      </article>
+
+      <article class="this-week-card">
+        <div class="this-week-icon">
+          <span class="calendar-outline-icon" aria-hidden="true"></span>
+        </div>
+        <div class="this-week-content">
+          <strong data-i18n="thisWeek">${WorkTrack.i18n.t("thisWeek")}</strong>
+          <small>${weekRange}</small>
+        </div>
+        <div class="this-week-stats">
+          <small data-i18n="hoursLogged">${WorkTrack.i18n.t("hoursLogged")}</small>
+          <strong class="hours-logged">${weeklyHours}</strong>
+        </div>
+        <div class="this-week-arrow">-&gt;</div>
       </article>
     `;
   }
-
-  function updateTimerText() {
-    const display = WorkTrack.dom.$("#timerDisplay");
-    if (display) display.textContent = WorkTrack.date.formatDuration(WorkTrack.features.timer.elapsed());
-  }
-
-  window.addEventListener("beforeunload", () => window.clearInterval(timerInterval));
 })(window);
 
 
