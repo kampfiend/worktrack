@@ -27,7 +27,26 @@
               s.shift.lastSummary = null;
             });
           } else {
+            const wasActive = currentState.shift.active;
             WorkTrack.features.timer.toggle();
+            
+            // If we just clocked out via Dev Key, mock an 07:58 shift so the calendar reflects the UI
+            if (wasActive) {
+              WorkTrack.state.update((s) => {
+                const todayKey = WorkTrack.date.toDateKey(new Date());
+                s.logs[todayKey] = {
+                  ...(s.logs[todayKey] || {}),
+                  start: "09:00",
+                  end: "16:58",
+                  categories: ["normal"]
+                };
+                if (s.shift.lastSummary) {
+                  s.shift.lastSummary.start = "09:00";
+                  s.shift.lastSummary.end = "16:58";
+                  s.shift.lastSummary.durationMs = (7 * 3600 + 58 * 60) * 1000;
+                }
+              });
+            }
           }
           render();
         } else {
